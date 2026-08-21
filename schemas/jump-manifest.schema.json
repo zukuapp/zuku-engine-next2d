@@ -1,17 +1,52 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "zuku Jump Manifest",
+  "description": "Public package metadata contract for online Next2D Jump packages.",
+  "$id": "https://schemas.zuzunza.com/jump/manifest.schema.json",
   "type": "object",
-  "required": ["id", "version", "entry_point", "format", "platform"],
+  "required": ["schema_version", "id", "version", "title", "entry_point", "format", "platform"],
   "properties": {
+    "schema_version": { "const": "1" },
     "id": { "type": "string", "pattern": "^game_[A-Za-z0-9_-]+$" },
     "version": { "type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$" },
+    "title": { "type": "string", "minLength": 1, "maxLength": 120 },
+    "description": { "type": "string", "maxLength": 4000 },
     "entry_point": { "const": "index.html" },
     "format": { "enum": ["html5", "wasm"] },
     "platform": {
       "type": "object",
       "required": ["pc"],
-      "properties": { "pc": { "type": "boolean" }, "mobile": { "type": "boolean" }, "tablet": { "type": "boolean" } },
+      "properties": {
+        "pc": { "type": "boolean" },
+        "mobile": { "type": "boolean" },
+        "tablet": { "type": "boolean" }
+      },
+      "additionalProperties": false
+    },
+    "mobile_optimization": {
+      "type": "object",
+      "required": ["certified"],
+      "properties": {
+        "certified": { "type": "boolean" },
+        "level": { "type": ["string", "null"], "enum": ["basic", "verified", null] }
+      },
+      "additionalProperties": false
+    },
+    "engine": {
+      "type": "object",
+      "required": ["name", "version"],
+      "properties": {
+        "name": { "const": "next2d" },
+        "version": { "type": "string", "minLength": 1, "maxLength": 32 }
+      },
+      "additionalProperties": false
+    },
+    "permissions": {
+      "type": "object",
+      "properties": {
+        "network": { "enum": ["none", "allowlist"] },
+        "storage": { "enum": ["sandbox"] }
+      },
       "additionalProperties": false
     }
   },
