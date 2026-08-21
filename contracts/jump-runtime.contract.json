@@ -1,0 +1,85 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.zuzunza.com/jump/runtime-contract.schema.json",
+  "title": "zuku Jump public runtime contract",
+  "description": "Public boundaries and resource limits. Proprietary enforcement details are intentionally excluded.",
+  "type": "object",
+  "required": ["sandbox", "package_limits", "runtime_limits", "swf_player"],
+  "properties": {
+    "sandbox": {
+      "type": "object",
+      "required": ["privilege", "filesystem", "network", "process"],
+      "properties": {
+        "privilege": { "const": "unprivileged" },
+        "filesystem": { "const": "sandbox_only" },
+        "network": { "const": "deny_by_default" },
+        "process": { "const": "no_exec_outside_runtime" }
+      },
+      "additionalProperties": false
+    },
+    "package_limits": {
+      "type": "object",
+      "required": ["online_pc_bytes", "online_mobile_bytes", "format"],
+      "properties": {
+        "online_pc_bytes": { "const": 524288000 },
+        "online_mobile_bytes": { "const": 104857600 },
+        "format": { "const": "zip" },
+        "accepted_payloads": {
+          "type": "array",
+          "items": { "enum": ["html5", "wasm"] },
+          "uniqueItems": true,
+          "minItems": 1
+        }
+      },
+      "additionalProperties": false
+    },
+    "runtime_limits": {
+      "type": "object",
+      "required": ["memory_default_bytes", "memory_max_bytes"],
+      "properties": {
+        "memory_default_bytes": { "const": 268435456 },
+        "memory_max_bytes": { "const": 536870912 },
+        "mobile_certification_memory_max_bytes": { "const": 536870912 },
+        "cpu": { "const": "contract_enforced" }
+      },
+      "additionalProperties": false
+    },
+    "swf_player": {
+      "type": "object",
+      "required": [
+        "execution",
+        "direct_original",
+        "browser_plugins",
+        "ruffle",
+        "active_x",
+        "npapi",
+        "sandbox",
+        "resource_policy",
+        "enforcement"
+      ],
+      "properties": {
+        "execution": { "const": "zuku-owned-avm" },
+        "direct_original": { "const": true },
+        "browser_plugins": { "const": false },
+        "ruffle": { "const": false },
+        "active_x": { "const": false },
+        "npapi": { "const": false },
+        "sandbox": { "const": "unprivileged" },
+        "resource_policy": { "const": "jump-runtime-contract" },
+        "enforcement": { "const": "public-boundary-only" },
+        "supported_compression": {
+          "type": "array",
+          "items": { "enum": ["uncompressed", "zlib"] },
+          "uniqueItems": true
+        },
+        "supported_avm": {
+          "type": "array",
+          "items": { "enum": ["avm1", "avm2"] },
+          "uniqueItems": true
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

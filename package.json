@@ -1,0 +1,34 @@
+﻿{
+  "name": "zuku-engine-next2d",
+  "version": "0.1.0",
+  "description": "Public Next2D Jump package contract and runtime adapter.",
+  "type": "module",
+  "publishConfig": {
+    "access": "public"
+  },
+  "exports": {
+    ".": "./src/next2d-adapter.mjs",
+    "./validator": "./src/package-validator.mjs",
+    "./browser-validator": "./src/package-validator-browser.mjs",
+    "./player": "./src/jump-player.mjs",
+    "./legacy": "./src/legacy-jump.mjs",
+    "./swf-compat": "./src/swf-compat.mjs",
+    "./swf-backend": "./src/swf-backend.mjs",
+    "./awayfl-backend": "./src/awayfl-backend.mjs",
+    "./swf-guidance": "./src/swf-guidance.mjs",
+    "./runtime-bridge": "./src/runtime-bridge.mjs",
+    "./runtime-contract": "./src/runtime-contract.mjs"
+  },
+  "scripts": {
+    "test": "node --test",
+    "lint": "node --check src/package-validator.mjs && node --check src/package-validator-browser.mjs && node --check src/next2d-adapter.mjs && node --check src/jump-player.mjs && node --check src/runtime-bridge.mjs && node --check src/runtime-contract.mjs && node --check src/swf-compat.mjs && node --check src/swf-backend.mjs && node --check src/awayfl-backend.mjs && node --check src/swf-guidance.mjs"
+  },
+  "dependencies": {
+    "fflate": "^0.8.2"
+  },
+  "optionalDependencies": {
+    "@awayfl/avm1": "0.2.181",
+    "@awayfl/avm2": "0.2.236",
+    "@awayfl/swf-loader": "0.4.133"
+  }
+}

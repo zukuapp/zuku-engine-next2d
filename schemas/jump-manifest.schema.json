@@ -48,6 +48,24 @@
         "storage": { "enum": ["sandbox"] }
       },
       "additionalProperties": false
+    },
+    "swf_backend": {
+      "type": "object",
+      "required": ["interface_version", "provider", "avm"],
+      "properties": {
+        "interface_version": { "const": "1" },
+        "provider": {
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9._-]{1,63}$"
+        },
+        "avm": {
+          "type": "array",
+          "items": { "enum": ["avm1", "avm2"] },
+          "uniqueItems": true,
+          "minItems": 1
+        }
+      },
+      "additionalProperties": false
     }
   },
   "additionalProperties": false

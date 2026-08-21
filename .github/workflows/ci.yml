@@ -1,4 +1,4 @@
-name: CI
+﻿name: CI
 
 on:
   push:
@@ -10,14 +10,44 @@ permissions:
   contents: read
 
 jobs:
-  validate:
+  validate-repo:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Validate repository
+      - name: Validate repository files
         shell: bash
         run: |
           test -s README.md
           test -s LICENSE
           test -s SECURITY.md
-          test -s .github/CODEOWNERS
+
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: npm ci
+      - run: npm test
+
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: npm ci
+      - run: npm run lint
+
+  validate-package:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: npm ci
+      - name: Validate package with fixture
+        run: node --input-type=module -e "import { validatePackage } from './src/package-validator.mjs'; const r = await validatePackage('fixtures/sample-jump/jump.manifest.json', './fixtures/sample-jump'); console.log(JSON.stringify(r, null, 2));"

@@ -1,0 +1,26 @@
+{
+  "schema_version": "1",
+  "id": "game_next2d_sample",
+  "version": "1.0.0",
+  "title": "Next2D Sample Jump",
+  "description": "Minimal HTML5 fixture for package validation.",
+  "entry_point": "index.html",
+  "format": "html5",
+  "platform": {
+    "pc": true,
+    "mobile": true,
+    "tablet": true
+  },
+  "mobile_optimization": {
+    "certified": true,
+    "level": "basic"
+  },
+  "engine": {
+    "name": "next2d",
+    "version": "0.1"
+  },
+  "permissions": {
+    "network": "none",
+    "storage": "sandbox"
+  }
+}
