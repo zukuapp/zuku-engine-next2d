@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "zuku Jump Manifest",
+  "type": "object",
+  "required": ["id", "version", "entry_point", "format", "platform"],
+  "properties": {
+    "id": { "type": "string", "pattern": "^game_[A-Za-z0-9_-]+$" },
+    "version": { "type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$" },
+    "entry_point": { "const": "index.html" },
+    "format": { "enum": ["html5", "wasm"] },
+    "platform": {
+      "type": "object",
+      "required": ["pc"],
+      "properties": { "pc": { "type": "boolean" }, "mobile": { "type": "boolean" }, "tablet": { "type": "boolean" } },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}
