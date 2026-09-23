@@ -50,4 +50,19 @@ jobs:
           node-version: 20
       - run: npm ci
       - name: Validate package with fixture
-        run: node --input-type=module -e "import { validatePackage } from './src/package-validator.mjs'; const r = await validatePackage('fixtures/sample-jump/jump.manifest.json', './fixtures/sample-jump'); console.log(JSON.stringify(r, null, 2));"
+        run: |
+          node --input-type=module <<'NODE'
+          import { readFileSync } from 'node:fs';
+          import { zipSync } from 'fflate';
+          import { validatePackageBytes } from './src/package-validator.mjs';
+
+          const bytes = zipSync({
+            'index.html': readFileSync('fixtures/sample-jump/index.html'),
+            'jump.manifest.json': readFileSync('fixtures/sample-jump/jump.manifest.json'),
+          });
+          const result = validatePackageBytes(bytes, 'pc');
+          if (!result.valid || result.manifest.entry_point !== 'index.html') {
+            throw new Error('fixture package validation failed');
+          }
+          console.log('Fixture package validated:', result.sha256);
+          NODE

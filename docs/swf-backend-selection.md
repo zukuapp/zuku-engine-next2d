@@ -1,5 +1,7 @@
 # SWF backend 조사 및 선택 기준
 
+이 문서는 선택 근거와 공개 인터페이스를 기록합니다. optional AwayFL 연동만으로 원본 SWF의 재생이나 운영 샌드박스가 제공되는 것은 아닙니다. 실제 제공 범위는 [README](../README.md)와 코드의 검증 결과를 기준으로 확인하세요.
+
 ## 결론
 
 AwayFL을 optional provider wiring으로 연결하되 기본 backend로 강제하지 않는다.
@@ -15,7 +17,7 @@ AVM1/AVM2 호환성 및 샌드박스 경계 검증 결과다.
 
 | 후보 | 범위·실행 형태 | 유지보수 근거 | 라이선스 | 이번 결정 |
 |---|---|---|---|---|
-| AwayFL `@awayfl/avm1` / `@awayfl/avm2` + `@awayfl/swf-loader` | TypeScript/JavaScript AVM1·AVM2 계층 및 SWF loading primitive, 브라우저 지향 | npm latest: AVM1 `0.2.181`, AVM2 `0.2.236`, loader `0.4.133` 확인 (2026-08-21) | Apache-2.0 | optional wiring 적용. 완전한 SWF player·렌더러·sandbox bridge는 zuku가 주입해야 함 |
+| AwayFL `@awayfl/avm1` / `@awayfl/avm2` + `@awayfl/swf-loader` | TypeScript/JavaScript AVM1·AVM2 계층 및 SWF loading primitive, 브라우저 지향 | 이 저장소의 `package.json`에 고정된 버전: AVM1 `0.2.181`, AVM2 `0.2.236`, loader `0.4.133` | Apache-2.0 | optional wiring 적용. 완전한 SWF player·렌더러·sandbox bridge는 zuku가 주입해야 함 |
 | Lightspark | C/C++ standalone/plugin Flash player, AVM 범위 넓음 | 공식 저장소 및 2026-07 development release 확인 | LGPL-3.0 | 활성 후보이나 공식 WASM/browser build가 확인되지 않고 native 의존성이 큼. 보류 |
 | Gnash | 주로 SWF 7/8/일부 9, AVM1 중심 | 마지막 실질 변경 2019년으로 확인 | GPL-3.0 | 유지보수·AVM2·현대 빌드 요건이 부적합. 제외 |
 | Adobe `avmplus`/Tamarin | AVM2 VM 핵심, Flash API/player 아님 | GitHub archive, 2020년 read-only 전환 | MPL-2.0 | 참고 구현일 뿐 직접 backend로 보류 |
