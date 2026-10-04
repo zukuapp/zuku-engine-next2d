@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "title": "zuku Jump Manifest",
+  "title": "ZUKU Jump Manifest",
   "description": "Public package metadata contract for online Next2D Jump packages.",
   "$id": "https://schemas.zuzunza.com/jump/manifest.schema.json",
   "type": "object",
@@ -60,7 +60,7 @@
         },
         "avm": {
           "type": "array",
-          "items": { "enum": ["avm1", "avm2"] },
+          "items": { "type": "string", "enum": ["avm1", "avm2"] },
           "uniqueItems": true,
           "minItems": 1
         }

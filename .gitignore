@@ -8,3 +8,5 @@ target/
 coverage/
 *.log
 *.wasm
+/output/
+/.playwright-cli/

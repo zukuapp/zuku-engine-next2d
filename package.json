@@ -1,6 +1,6 @@
-﻿{
+{
   "name": "zuku-engine-next2d",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Public Next2D Jump package contract and runtime adapter.",
   "type": "module",
   "publishConfig": {
@@ -20,15 +20,26 @@
     "./runtime-contract": "./src/runtime-contract.mjs"
   },
   "scripts": {
-    "test": "node --test",
-    "lint": "node --check src/package-validator.mjs && node --check src/package-validator-browser.mjs && node --check src/next2d-adapter.mjs && node --check src/jump-player.mjs && node --check src/runtime-bridge.mjs && node --check src/runtime-contract.mjs && node --check src/swf-compat.mjs && node --check src/swf-backend.mjs && node --check src/awayfl-backend.mjs && node --check src/swf-guidance.mjs"
+    "test": "npm run check:manifest && node --test",
+    "lint": "node --check src/package-validator.mjs && node --check src/package-validator-browser.mjs && node --check src/next2d-adapter.mjs && node --check src/jump-player.mjs && node --check src/runtime-bridge.mjs && node --check src/runtime-contract.mjs && node --check src/swf-compat.mjs && node --check src/swf-backend.mjs && node --check src/awayfl-backend.mjs && node --check src/swf-guidance.mjs",
+    "generate:manifest": "node scripts/generate-manifest-validator.mjs",
+    "check:manifest": "node scripts/generate-manifest-validator.mjs --check"
   },
   "dependencies": {
-    "fflate": "^0.8.2"
+    "ajv": "8.20.0",
+    "fflate": "0.8.3"
   },
   "optionalDependencies": {
     "@awayfl/avm1": "0.2.181",
     "@awayfl/avm2": "0.2.236",
     "@awayfl/swf-loader": "0.4.133"
-  }
+  },
+  "files": [
+    "src/",
+    "schemas/",
+    "LICENSE",
+    "THIRD_PARTY_NOTICES.md",
+    "README.md",
+    "docs/"
+  ]
 }

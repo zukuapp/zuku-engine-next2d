@@ -1,75 +1,32 @@
-import { createHash } from "node:crypto";
-import { readFile } from "node:fs/promises";
-import { basename, posix } from "node:path";
-import { unzipSync } from "fflate";
-import { assertRuntimeManifest } from "./runtime-contract.mjs";
-
-export const PACKAGE_LIMITS = Object.freeze({
-  pc: 500 * 1024 * 1024,
-  mobile: 100 * 1024 * 1024,
-});
-
-const REQUIRED = ["index.html"];
-
-export async function validatePackage(filePath, target = "pc") {
-  const bytes = await readFile(filePath);
-  return validatePackageBytes(bytes, target);
+import { createHash } from 'node:crypto';
+import { constants } from 'node:fs';
+import { open } from 'node:fs/promises';
+import { PACKAGE_LIMITS, asPackageBytes, PackageValidationError } from './zip-policy.mjs';
+import { inspectPackage } from './package-validation.mjs';
+export { PACKAGE_LIMITS };
+export async function validatePackage(filePath, target = 'pc') {
+  if (!Object.hasOwn(PACKAGE_LIMITS, target)) throw new PackageValidationError(`unsupported target: ${target}`);
+  // Nonblocking open also allows the regular-file check to reject FIFOs without hanging.
+  const file = await open(filePath, constants.O_RDONLY | (constants.O_NONBLOCK ?? 0));
+  try {
+    const stat = await file.stat();
+    if (!stat.isFile()) throw new PackageValidationError('package path must refer to a regular file');
+    if (stat.size > PACKAGE_LIMITS[target]) throw new PackageValidationError(`package exceeds ${target} limit (${PACKAGE_LIMITS[target]} bytes)`);
+    if (stat.size < 22) throw new PackageValidationError('package must be a valid ZIP archive');
+    const bytes = new Uint8Array(stat.size);
+    let offset = 0;
+    while (offset < bytes.length) {
+      const result = await file.read(bytes, offset, bytes.length - offset, offset);
+      if (!result.bytesRead) throw new PackageValidationError('package changed or was truncated while reading');
+      offset += result.bytesRead;
+    }
+    const extra = new Uint8Array(1);
+    if ((await file.read(extra, 0, 1, offset)).bytesRead || (await file.stat()).size !== stat.size) throw new PackageValidationError('package changed while reading');
+    return validatePackageBytes(bytes, target);
+  } finally { await file.close(); }
 }
-
-export function validatePackageBytes(bytes, target = "pc") {
-  if (!(bytes instanceof Uint8Array)) throw new TypeError("package must be bytes");
-  if (!Object.hasOwn(PACKAGE_LIMITS, target)) throw new Error(`unsupported target: ${target}`);
-  const limit = PACKAGE_LIMITS[target];
-  if (bytes.byteLength > limit) {
-    throw new Error(`package exceeds ${target} limit (${limit} bytes)`);
-  }
-
-  let files;
-  try {
-    files = unzipSync(bytes);
-  } catch {
-    throw new Error("package must be a valid ZIP archive");
-  }
-  const names = Object.keys(files);
-  for (const required of REQUIRED) {
-    if (!files[required]) throw new Error(`missing required file: ${required}`);
-  }
-  if (names.some((name) => name.startsWith("/") || name.includes("\\") || name.split("/").includes(".."))) {
-    throw new Error("package contains an unsafe path");
-  }
-  const manifest = files["jump.manifest.json"];
-  if (!manifest) throw new Error("missing required file: jump.manifest.json");
-
-  let parsedManifest;
-  try {
-    parsedManifest = JSON.parse(new TextDecoder().decode(manifest));
-  } catch {
-    throw new Error("jump.manifest.json must be valid JSON");
-  }
-  if (parsedManifest.entry_point !== "index.html") {
-    throw new Error("manifest entry_point must be index.html");
-  }
-  if (!["html5", "wasm"].includes(parsedManifest.format)) {
-    throw new Error("manifest format must be html5 or wasm");
-  }
-  if (parsedManifest.format === "wasm" && !names.some((name) => posix.extname(name) === ".wasm")) {
-    throw new Error("WASM packages must include a .wasm file");
-  }
-  if (parsedManifest.format === "html5" && !names.includes("index.html")) {
-    throw new Error("HTML5 packages must include index.html");
-  }
-  if (parsedManifest.swf_backend && parsedManifest.format !== "wasm") {
-    throw new Error("swf_backend capability requires a WASM package");
-  }
-  const capabilities = assertRuntimeManifest(parsedManifest);
-
-  return {
-    valid: true,
-    target,
-    size_bytes: bytes.byteLength,
-    sha256: createHash("sha256").update(bytes).digest("hex"),
-    files: names.map((name) => basename(name)).sort(),
-    manifest: parsedManifest,
-    capabilities,
-  };
+export function validatePackageBytes(bytes, target = 'pc') {
+  bytes = asPackageBytes(bytes);
+  const result = inspectPackage(bytes, target);
+  return { ...result, sha256: createHash('sha256').update(bytes).digest('hex') };
 }
