@@ -32,7 +32,7 @@ supported. Non-ASCII member names require the UTF-8 flag.
 before allocating the input; concurrent growth or truncation causes an error.
 `validatePackageBytes(bytes)` also accepts an ArrayBuffer or typed byte view.
 Browser hashing requires WebCrypto in a secure context and reports its absence.
-Large browser inputs should be validated in a dedicated Worker to keep the UI
+Validate large browser inputs in a dedicated Worker to keep the UI
 responsive. Asset/native host execution and OS sandbox enforcement are separate
 host responsibilities; successful validation does not prove gameplay.
 
