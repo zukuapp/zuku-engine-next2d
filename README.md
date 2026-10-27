@@ -20,14 +20,14 @@
 
 ## 개요
 
-이 저장소는 ZUKU Jump의 ZIP 패키지 검증기, 매니페스트 스키마, 런타임 경계, Next2D 연결 어댑터를 공개합니다. 플랫폼의 완전한 게임 호스트와 운영 샌드박스 구현은 이 패키지에 포함되지 않습니다.
+이 저장소는 ZUKU Jump의 ZIP 패키지 검증기, 매니페스트 스키마, 런타임 경계, Next2D 연결 어댑터를 제공합니다.
 
 | 문서 | 내용 |
 | --- | --- |
 | [`schemas/jump-manifest.schema.json`](schemas/jump-manifest.schema.json) | `jump.manifest.json`의 전체 JSON Schema |
 | [`contracts/jump-runtime.contract.json`](contracts/jump-runtime.contract.json) | 공개 실행 경계와 한도 |
 | [`docs/package-validation.md`](docs/package-validation.md) | ZIP 검증 정책과 한도 |
-| [`docs/swf-backend-selection.md`](docs/swf-backend-selection.md) | SWF 백엔드 선택과 검증 결과 |
+| [`docs/swf-backend-selection.md`](docs/swf-backend-selection.md) | SWF 백엔드 선택 기준과 계약 |
 
 Jump ZIP 패키지의 요건은 다음과 같습니다.
 
@@ -84,19 +84,14 @@ console.log(result.manifest, result.sha256);
 
 브라우저 검증기는 `./browser-validator`로 가져옵니다. 세부 정책은 [패키지 검증 문서](docs/package-validation.md)에 있습니다.
 
-### 검증 범위
+### 호스트 책임
 
-- `validatePackage`는 실행 샌드박스가 아닙니다. 검증 통과는 게임 실행 성공을 의미하지 않습니다.
-- `Next2DAdapter`는 호스트가 제공한 `load`, `start` 등의 메서드를 연결합니다.
-- `Next2DAdapter`는 권한 격리와 자원 한도를 집행하지 않습니다.
+- `validatePackage`는 패키지 구조와 매니페스트만 검사합니다. 게임 실행과 샌드박스 격리는 호스트가 담당합니다.
+- `Next2DAdapter`는 호스트가 제공한 `load`, `start` 등의 메서드를 연결합니다. 권한 격리와 자원 한도는 호스트가 집행합니다.
 
 ### SWF와 `.zwf` 형식
 
-- 이 저장소는 브라우저 플러그인이나 범용 SWF 실행기가 아닙니다.
-- SWF 원본의 검증과 실행 범위는 [SWF 백엔드 문서](docs/swf-backend-selection.md)에 정의돼 있습니다.
-- SWF 실행 여부는 호스트의 플레이어, 권한, 샌드박스 계약이 결정합니다.
 - HTML5 ZIP을 ZWF2 `.zwf`로 만드는 도구는 [`zwf`](https://github.com/zukuapp/zwf)입니다.
-- ZUKBOX 런타임의 ZWF1 바이너리는 [`zukbox-runtime`](https://github.com/zukuapp/zukbox-runtime)의 별도 형식입니다.
 - `jump.manifest.json`은 ZWF2 매니페스트와 호환되지 않습니다.
 
 ## 설정
@@ -113,7 +108,7 @@ console.log(result.manifest, result.sha256);
 ## 기여
 
 - 패키지, 매니페스트, 런타임 계약을 바꾸면 해당 테스트와 스키마 또는 계약 파일을 함께 갱신합니다.
-- 공개 범위와 기여 절차는 [CONTRIBUTING.md](CONTRIBUTING.md)를 따릅니다.
+- 기여 절차는 [CONTRIBUTING.md](CONTRIBUTING.md)를 따릅니다.
 - 취약점 신고는 [SECURITY.md](SECURITY.md)를 따릅니다.
 - 전체 공개 문서의 시작점은 [ZUKU 개발자 허브](https://github.com/zukuapp/.github/blob/main/docs/README.md)입니다.
 
